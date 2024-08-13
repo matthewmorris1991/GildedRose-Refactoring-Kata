@@ -1,5 +1,7 @@
 # Gilded Rose starting position in C# NUnit
 
+Before running the commands below, make sure you cd to the GildedRose-Refactoring-Kata\csharp.NUnit directory
+
 ## Build the project
 
 Use your normal build tools to build the projects in Debug mode.

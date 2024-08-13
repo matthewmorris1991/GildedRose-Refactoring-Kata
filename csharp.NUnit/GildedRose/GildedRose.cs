@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRoseKata;
 
@@ -13,75 +14,22 @@ public class GildedRose
 
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
+        foreach (var item in Items)
         {
-            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-            {
-                if (Items[i].Quality > 0)
-                {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                    {
-                        Items[i].Quality = Items[i].Quality - 1;
-                    }
-                }
-            }
-            else
-            {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
+            //Compare item name with list of pre-existing products
+            var itemType = ItemTypes.CheckItemType(item.Name);
+            //Dont allow Quality to go below 0 or above the itemType Max
+            item.Quality = Math.Clamp(item.Quality + itemType.ItemTypeIncrement(item), 0, itemType.MaxQuality);
 
-                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].SellIn < 11)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+            //This could be simplified further but was sure on the requirement for SellIn Date reducing for Sulfuras
+            if (!itemType.GetType().Equals(typeof(SulfurasItemType)))
             {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
-
-            if (Items[i].SellIn < 0)
-            {
-                if (Items[i].Name != "Aged Brie")
+                item.SellIn--;
+                //If SellIn < 0 check for further Quality reductions
+                if (item.SellIn < 0)
                 {
-                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].Quality > 0)
-                        {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].Quality = Items[i].Quality - 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-                    }
+                    //Dont allow Quality to go below 0 or above the itemType Max
+                    item.Quality = Math.Clamp(item.Quality + itemType.ItemTypeIncrement(item), 0, itemType.MaxQuality);
                 }
             }
         }
